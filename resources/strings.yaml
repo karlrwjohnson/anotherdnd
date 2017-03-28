@@ -1,0 +1,47 @@
+
+anotherdnd.view.temp.CharacterBuilderScreen1:
+  name:
+    title: Name
+    content: |
+      <html>
+        <p>Your character's name identifies him or her in the world. It can be unique and meaningful, or common.</p>
+      </html>"
+
+  race:
+    title: Race
+    content: |
+      <html>
+        <p>The world is full of folks of diverse origins and backgrounds, not all of them human.</p>
+        <p>Your character's race doesn't just affect their backstory; different races are granted different benefits</p>
+      </html>
+
+  alignment:
+    title: Alignment
+    content: |
+      <html>
+        <p>
+          How does your character react in ethically-challenging situations? Your character's alignment is a
+          generalization of their moral compass and civic sense of duty.
+        </p>
+        <br />
+        <p><b>Moral Axis</b> (vertical)</p>
+        <ul>
+          <li><b>Good</b> characters generally desire to help people and want to make the world become a better place for everyone.</li>
+          <li><b>Evil</b> characters are primarily driven by self-interest and do not care who they hurt while achieving their goals.</li>
+          <li><b>Neutral</b> characters fall somewhere in between, helping people when it's convenient but are content to let others save the world.</li>
+        </ul>
+        <p><b>Civic Axis</b> (horizontal)</p>
+        <ul>
+          <li><b>Lawful</b> characters believe that the law is vital to keeping the world in balance and wish to uphold it.</li>
+          <li><b>Chaotic</b> characters believe that laws are overly-restrictive. If they can get away with it, they tend to make their own rules.</li>
+          <li><b>Neutral</b> characters take a pragmatic approach, believing that laws are \"guidelines\" that uphold the peace most of the time,
+          but some situations call for them to be broken.</li>
+        </ul>
+      </html>
+
+  sex:
+    title: Sex/Gender
+    content: |
+      <html>
+        <p>Your character's sex does not affect game mechanics in any meaningful way.</p>
+      </html>"
