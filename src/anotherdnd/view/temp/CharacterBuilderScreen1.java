@@ -4,12 +4,18 @@ import anotherdnd.model.bio.CivicAlignment;
 import anotherdnd.model.bio.MoralAlignment;
 import anotherdnd.model.bio.Sex;
 import anotherdnd.model.race.Race;
+import anotherdnd.model.util.Maybe;
+import anotherdnd.view.temp.Wizard.WizardScreen;
 import anotherdnd.view.util.EnumListModel;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
+import java.io.File;
 import java.util.*;
 
 import static anotherdnd.view.util.EZGridBag.*;
@@ -17,9 +23,9 @@ import static anotherdnd.view.util.Events.onFocus;
 import static anotherdnd.view.util.Events.onMouseOver;
 import static anotherdnd.view.util.Misc.setMinimumWidth;
 import static java.awt.GridBagConstraints.HORIZONTAL;
+import static java.awt.GridBagConstraints.NORTH;
 
-public class CharacterBuilderScreen1 extends JPanel {
-    private final CharacterBuilderScreen1 that = this;
+public class CharacterBuilderScreen1 extends JPanel implements WizardScreen {
 
     private final JTextField                nameField           = new JTextField() {{ setBackground(Color.WHITE); }};
     private final AlignmentPicker           alignmentPicker     = new AlignmentPicker();
@@ -32,45 +38,25 @@ public class CharacterBuilderScreen1 extends JPanel {
 
     private final HashMap<Component, String[]> infoPanels = new HashMap<Component, String[]>() {
         {
-            put(nameField, new String[]{
-                "Name",
-                "<html>" +
-                    "<p>Your character's name identifies him or her in the world. It can be unique and meaningful, or common.</p>" +
-                    "</html>"
+            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            JsonNode node = Maybe.of(() -> mapper.readTree(new File("resources/strings.yaml"))).orElseThrow();
+            JsonNode stringMap = node.get(CharacterBuilderScreen1.class.getName());
+
+            put(nameField, new String[] {
+                    stringMap.get("name").get("title").asText(),
+                    stringMap.get("name").get("content").asText(),
             });
-            put(raceField, new String[]{
-                "Race",
-                "<html>" +
-                    "<p>The world is full of folks of diverse origins and backgrounds, not all of them human.</p>" +
-                    "<p>Your character's race doesn't just affect their backstory; different races are granted different benefits</p>" +
-                    "</html>"
+            put(raceField, new String[] {
+                    stringMap.get("race").get("title").asText(),
+                    stringMap.get("race").get("content").asText(),
             });
-            put(alignmentPicker, new String[]{
-                "Alignment",
-                "<html>" +
-                    "<p>How does your character react in ethically-challenging situations? Your character's alignment is a" +
-                    "generalization of their moral compass and civic sense of duty.</p>" +
-                    "<br />" +
-                    "<p><b>Moral Axis</b> (vertical)</p>" +
-                    "<ul>" +
-                    "<li><b>Good</b> characters generally desire to help people and want to make the world become a better place for everyone.</li>" +
-                    "<li><b>Evil</b> characters are primarily driven by self-interest and do not care who they hurt while achieving their goals.</li>" +
-                    "<li><b>Neutral</b> characters fall somewhere in between, helping people when it's convenient but are content to let others save the world.</li>" +
-                    "</ul>" +
-                    "<p><b>Civic Axis</b> (horizontal)</p>" +
-                    "<ul>" +
-                    "<li><b>Lawful</b> characters believe that the law is vital to keeping the world in balance and wish to uphold it.</li>" +
-                    "<li><b>Chaotic</b> characters believe that laws are overly-restrictive. If they can get away with it, they tend to make their own rules.</li>" +
-                    "<li><b>Neutral</b> characters take a pragmatic approach, believing that laws are \"guidelines\" that uphold the peace most of the time, " +
-                    "but some situations call for them to be broken.</li>" +
-                    "</ul>" +
-                    "</html>"
+            put(alignmentPicker, new String[] {
+                    stringMap.get("alignment").get("title").asText(),
+                    stringMap.get("alignment").get("content").asText(),
             });
-            put(sexField, new String[]{
-                "Sex/Gender",
-                "<html>" +
-                    "<p>Your character's sex does not affect game mechanics in any meaningful way.</p>" +
-                    "</html>"
+            put(sexField, new String[] {
+                    stringMap.get("sex").get("title").asText(),
+                    stringMap.get("sex").get("content").asText(),
             });
 
             for (Component component : keySet()) {
@@ -93,10 +79,6 @@ public class CharacterBuilderScreen1 extends JPanel {
 
     public CharacterBuilderScreen1() {
         super(new GridBagLayout());
-        setBorder(new EmptyBorder(MARGIN, 2*MARGIN, MARGIN, 2*MARGIN)); // padding
-
-        add(new JLabel("Create Character") {{ setFont(getFont().deriveFont(24.0f)); }}, gbc(gw(2), align(-1, 0), fill()));
-
         add(new JPanel(new GridBagLayout()) {{
             int y = 0;
 
@@ -115,19 +97,22 @@ public class CharacterBuilderScreen1 extends JPanel {
             add(sexField,                gbc(gy(++y), fill()));
 
             add(raceDescription,         gbc(gy(++y), fill()));
-        }}, gbc(gy(1), wy(1), noInsets(), align(0, -1)));
+        }}, gbc(wy(1), noInsets(), anchor(NORTH)));
 
         add(new JPanel(new GridBagLayout()) {{
             setBorder(new EmptyBorder(0, 2*MARGIN, 0, 0)); // padding
 
             add(infoTitle, gbc(wx(1), align(-1, 0), fill()));
             add(infoContent, gbc(gy(1), wx(1), wy(1), align(-1, -1), fill(HORIZONTAL)));
-        }}, gbc(gy(1), gx(1), wx(1), wy(1), noInsets(), fill(), align(0, -1)));
-
-        add(new JPanel(new FlowLayout(FlowLayout.RIGHT)) {{
-            add(new JButton("Next ▶"));
-        }}, gbc(gy(2), gw(2), fill()));
+        }}, gbc(gx(1), wx(1), wy(1), noInsets(), fill(), align(0, -1)));
     }
+
+    @Override public JPanel getPanel() { return this; }
+    @Override public String getTitle() { return "Create Character"; }
+    @Override public boolean hasPrevious() { return false; }
+    @Override public boolean hasNext() { return true; }
+    @Override public WizardScreen getPrevious() { return null; }
+    @Override public WizardScreen getNext() { return new CharacterBuilderScreen2(this); }
 
     private static class AlignmentPicker extends JPanel {
         private static class AlignmentButton extends JButton {

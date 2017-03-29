@@ -12,13 +12,18 @@ public interface Misc {
         }
     }
 
+    static Component spacer(int width, int height) {
+        JPanel panel = new JPanel();
+        Dimension size = new Dimension(width, height);
+        panel.setMinimumSize(size);    // Both "Minimum" and "Preferred" are necessary so that GBL sizes
+        panel.setPreferredSize(size);  // it the same regardless of whether it thinks it has "enough room"
+        return panel;
+    }
+
     static void setMinimumWidth(JPanel gridBagPanel, int width) {
         // This is hard to do since GBL doesn't seem to respect the minimum size if it can respect the preferred
         // size (you'd think it would enforce each dimension individually???)
         // So, we hack around it by giving it an empty element.
-        JPanel panel = new JPanel();
-        panel.setMinimumSize(new Dimension(width, 0));    // Both "Minimum" and "Preferred" are necessary so that GBL sizes
-        panel.setPreferredSize(new Dimension(width, 0));  // it the same regardless of whether it thinks it has "enough room"
-        gridBagPanel.add(panel, new GridBagConstraints());
+        gridBagPanel.add(spacer(width, 0), new GridBagConstraints());
     }
 }

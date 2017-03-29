@@ -22,7 +22,6 @@ import java.util.List;
 
 import static anotherdnd.view.util.Misc.formatBonus;
 import static anotherdnd.view.util.ModelSync.sync;
-import static anotherdnd.view.util.ModelSync.watch;
 import static anotherdnd.view.util.EZGridBag.*;
 import static java.awt.GridBagConstraints.*;
 

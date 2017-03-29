@@ -72,7 +72,7 @@ public class App extends JFrame {
     }
 
     void createNewCharacter() {
-        setContentPane(new CharacterBuilderScreen1());
+        setContentPane(new Wizard(new CharacterBuilderScreen1()));
     }
 
     void loadGame() {
