@@ -29,7 +29,7 @@ public class SavingThrow {
 
         // Class levels
         bonusSet.addBonus(BonusSet.BonusType.Untyped, character, SaveProgression.getTotalSaveBonus(
-            character.getClassLevels()
+            character.getClassLevels().stream()
                 .map(classLevel -> classLevel.getSaveProgression(save))
                 .collect(Collectors.toList())
         ));

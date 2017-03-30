@@ -14,7 +14,7 @@ import static java.awt.GridBagConstraints.*;
 
 public class CharacterPanel extends JPanel   {
     public static void main(String[] args) {
-        Run.runInFrame("Character Sheet", () -> new CharacterPanel(Character.CharacterBuilder.newCharacter().build()));
+        Run.runInFrame("Character Sheet", () -> new CharacterPanel(new Character()));
     }
 
     private Character character;

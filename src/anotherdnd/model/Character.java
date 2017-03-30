@@ -1,12 +1,10 @@
 package anotherdnd.model;
 
 import anotherdnd.model.bio.CivicAlignment;
-import anotherdnd.model.bio.Sex;
 import anotherdnd.model.bio.MoralAlignment;
-import anotherdnd.model.level.CharacterClass;
-import anotherdnd.model.level.ClassLevel;
+import anotherdnd.model.bio.Sex;
 import anotherdnd.model.feats.Feat;
-import anotherdnd.model.level.Fighter;
+import anotherdnd.model.level.ClassLevel;
 import anotherdnd.model.mechanics.*;
 import anotherdnd.model.mechanics.Attacks.Attack;
 import anotherdnd.model.mechanics.BonusSet.BonusSource;
@@ -16,9 +14,7 @@ import anotherdnd.model.race.Race;
 import anotherdnd.model.weapons.Weapon;
 import com.google.common.collect.Streams;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -59,8 +55,8 @@ public class Character implements BonusSource {
     public Character setMoralAlignment(MoralAlignment x) { moralAlignment = x; return this; }
     public Character setCivicAlignment(CivicAlignment x) { civicAlignment = x; return this; }
 
-    public Stream<ClassLevel> getClassLevels() {
-        return classLevels.stream();
+    public List<ClassLevel> getClassLevels() {
+        return Collections.unmodifiableList(classLevels);
     }
 
     public int countClassLevels(Class<? extends ClassLevel> theClass) {
@@ -113,7 +109,7 @@ public class Character implements BonusSource {
 
     public int getBaseAttackBonus() {
         return BaseAttackBonusProgression.getTotalBaseAttackBonus(
-            getClassLevels()
+            getClassLevels().stream()
                 .map(ClassLevel::getBaseAttackBonusProgression)
                 .collect(Collectors.toList())
         );
@@ -122,94 +118,4 @@ public class Character implements BonusSource {
 
 
 
-    public static class CharacterBuilder {
-        private final Character character = new Character();
-        private CharacterBuilder() {}
-
-        public static CharacterBuilder newCharacter() {
-            return new CharacterBuilder();
-        }
-
-        public CharacterBuilder setName(String name) {
-            character.setName(name);
-            return this;
-        }
-
-        public CharacterBuilder stats(int strength, int dexterity, int constitution, int intelligence, int wisdom, int charisma) {
-            character.abilityScores.get(Ability.STR).setBaseScore(strength);
-            character.abilityScores.get(Ability.DEX).setBaseScore(dexterity);
-            character.abilityScores.get(Ability.CON).setBaseScore(constitution);
-            character.abilityScores.get(Ability.INT).setBaseScore(intelligence);
-            character.abilityScores.get(Ability.WIS).setBaseScore(wisdom);
-            character.abilityScores.get(Ability.CHA).setBaseScore(charisma);
-            return this;
-        }
-
-        public CharacterBuilder race(Class<? extends Race> race) {
-            return this;
-        }
-
-        public CharacterBuilder alignment(MoralAlignment moralAlignment, CivicAlignment civicAlignment) {
-            return this;
-        }
-
-        public CharacterLeveler firstLevel(CharacterClass characterClass) {
-            return new CharacterLeveler(character, characterClass);
-        }
-
-        public Character build() {
-            return character;
-        }
-    }
-
-    public static class CharacterLeveler {
-        private final Character character;
-        private ClassLevel classLevel;
-
-        CharacterLeveler(Character character, CharacterClass characterClass) {
-            this.character = character;
-
-            Class<? extends ClassLevel> nextLevelClass = characterClass.nextLevel(character.classLevels)
-                .orElseThrow(() -> new RuntimeException(String.format("No levels of %s left to take", characterClass.getClass().getSimpleName())));
-
-            try {
-                classLevel = nextLevelClass.getConstructor().newInstance();
-            } catch (InstantiationException
-                    | IllegalAccessException
-                    | InvocationTargetException
-                    | NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        public Character apply() {
-            return character;
-        }
-
-        public int getSkillPointsRemaining() {
-            return classLevel.getSkillRankSlots() + character.getAbilityBonus(Ability.INT);
-        }
-
-//        public Map<Skill, Integer> getSkillPointsSpent() {
-//
-//        }
-
-//        public CharacterLeveler spendSkillPoints(Skill skill, int points) {
-//
-//        }
-    }
-
-
-    public static void main(String[] args) {
-        Character me = CharacterBuilder.newCharacter()
-            .setName("Wingblade")
-            .stats(14, 13, 12, 11, 10, 9)
-            .race(Human.class)
-            .alignment(MoralAlignment.GOOD, CivicAlignment.NEUTRAL)
-            .firstLevel(new Fighter()) // I don't like this...
-            .apply();
-        // character should be level 0.
-
-
-    }
 }
