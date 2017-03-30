@@ -9,7 +9,9 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 import static anotherdnd.view.util.EZGridBag.*;
+import static anotherdnd.view.util.Misc.formatBonus;
 import static anotherdnd.view.util.ModelSync.sync;
+import static anotherdnd.view.util.ModelSync.watch;
 import static java.awt.GridBagConstraints.*;
 
 public class CharacterBuilderScreen2 extends JPanel implements WizardScreen {
@@ -42,34 +44,33 @@ public class CharacterBuilderScreen2 extends JPanel implements WizardScreen {
             add(new JPanel(new GridBagLayout()) {{
                 int y = -1;
 
-                ++y;
-                add(new JLabel("Score"), gbc(gx(1), gw(3)));
-                add(new JLabel("Modifier"), gbc(gx(4)));
-
                 for (Ability ability : Ability.values()) {
                     ++y;
                     int x = -1;
 
                     JLabel abilityLabel = new JLabel(ability.name);
-                    JLabel abilityScore = sync(new JLabel(), () -> character.getAbilityScore(ability));
+                    JLabel abilityScore = sync(new JLabel(), () -> formatBonus(character.getAbilityScore(ability)));
                     JButton decrementScore = new JButton("-");
                     JButton incrementScore = new JButton("+");
-                    JLabel abilityBonus = sync(new JLabel(), () -> character.getAbilityBonus(ability));
+                    JLabel abilityBonus = sync(new JLabel(), () -> formatBonus(character.getAbilityBonus(ability)));
 
                     decrementScore.addActionListener(e -> budget.decrementScore(ability));
                     incrementScore.addActionListener(e -> budget.incrementScore(ability));
 
-                    add(abilityLabel,   gbc(gx(++x), gy(y), fill()));
-                    add(decrementScore, gbc(gx(++x), gy(y), fill()));
-                    add(abilityScore,   gbc(gx(++x), gy(y), fill()));
-                    add(incrementScore, gbc(gx(++x), gy(y), fill()));
-                    add(abilityBonus,   gbc(gx(++x), gy(y), fill()));
+                    watch(decrementScore, JButton::setEnabled, () -> budget.canDecrementScore(ability));
+                    watch(incrementScore, JButton::setEnabled, () -> budget.canIncrementScore(ability));
 
-                    infoPanel.showForComponent(abilityLabel, ability.name());
+                    add(abilityLabel,   gbc(gx(++x), gy(y), align(-1, 0)));
+                    add(decrementScore, gbc(gx(++x), gy(y), align(+0, 0), fill()));
+                    add(abilityScore,   gbc(gx(++x), gy(y), align(+1, 0)));
+                    add(incrementScore, gbc(gx(++x), gy(y), align(+0, 0), fill()));
+                    add(abilityBonus,   gbc(gx(++x), gy(y), align(+0, 0)));
+
+                    infoPanel.showForComponent(abilityLabel,   ability.name());
                     infoPanel.showForComponent(decrementScore, ability.name());
-                    infoPanel.showForComponent(abilityScore, ability.name());
+                    infoPanel.showForComponent(abilityScore,   ability.name());
                     infoPanel.showForComponent(incrementScore, ability.name());
-                    infoPanel.showForComponent(abilityBonus, ability.name());
+                    infoPanel.showForComponent(abilityBonus,   ability.name());
                 }
             }}, gbc(gy(++y), wy(1), fill(), noInsets()));
 

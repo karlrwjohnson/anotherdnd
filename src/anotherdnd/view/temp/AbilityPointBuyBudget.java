@@ -65,6 +65,14 @@ public class AbilityPointBuyBudget {
         ModelSync.scheduleUpdate();
     }
 
+    public boolean canIncrementScore(Ability ability) {
+        return character.getAbilityBaseScore(ability) < MAXIMUM;
+    }
+
+    public boolean canDecrementScore(Ability ability) {
+        return character.getAbilityBaseScore(ability) > MINIMUM;
+    }
+
     private static class FloatingPlusTwoAbilityPointBuyBudget extends AbilityPointBuyBudget {
         private final FloatingPlusTwoRace characterRace;
 
@@ -74,21 +82,29 @@ public class AbilityPointBuyBudget {
         }
 
         @Override
+        public boolean canIncrementScore(Ability ability) {
+            Ability floating = characterRace.getFloatingAbility();
+            return character.getAbilityBaseScore(ability) < MAXIMUM ||
+                floating != null && floating != ability && character.getAbilityBaseScore(floating) + 2 <= MAXIMUM;
+        }
+
+        @Override
         public void incrementScore(Ability ability) {
-            super.incrementScore(ability);
+            Ability floating = characterRace.getFloatingAbility();
 
             // Re-allocate points to take maximum advantage of the floating +2
-            Ability floating = characterRace.getFloatingAbility();
             if (floating == null) {
                 // Floating bonus has not yet been claimed
                 character.setAbilityBaseScore(ability, character.getAbilityBaseScore(ability) - FLOATING_BONUS);
                 characterRace.setFloatingAbility(ability);
             } else if (ability != floating &&
-                    character.getAbilityScore(ability) > character.getAbilityScore(floating)) {
+                    character.getAbilityScore(ability) >= character.getAbilityScore(floating)) {
                 character.setAbilityBaseScore(ability, character.getAbilityBaseScore(ability) - FLOATING_BONUS);
                 character.setAbilityBaseScore(floating, character.getAbilityBaseScore(floating) + FLOATING_BONUS);
                 characterRace.setFloatingAbility(ability);
             }
+
+            super.incrementScore(ability);
         }
 
         @Override
