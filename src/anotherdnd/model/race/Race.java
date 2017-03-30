@@ -43,7 +43,7 @@ public interface Race extends
             .mapToInt(AbilityBonus::bonus)
             .findFirst()
             .orElse(0);
-        return new Penalty(bonus, this);
+        return new Penalty(-bonus, this);
     }
 
     default String getDescription() {

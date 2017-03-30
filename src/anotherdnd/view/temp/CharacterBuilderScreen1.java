@@ -2,7 +2,7 @@ package anotherdnd.view.temp;
 
 import anotherdnd.model.Character;
 import anotherdnd.model.bio.Sex;
-import anotherdnd.model.race.Race;
+import anotherdnd.model.race.*;
 import anotherdnd.view.temp.Wizard.WizardScreen;
 import anotherdnd.view.util.EnumListModel;
 import anotherdnd.view.util.ModelSync;
@@ -19,9 +19,15 @@ import static java.awt.GridBagConstraints.NORTH;
 
 public class CharacterBuilderScreen1 extends JPanel implements WizardScreen {
 
+    private final Race[] races = new Race[]{
+        new Human(),
+        new Dwarf(),
+        new Elf(),
+    };
+
     private final JTextField      nameField       = new JTextField() {{ setBackground(Color.WHITE); }};
     private final JComboBox<Sex>  sexField        = new JComboBox<>(new EnumListModel<>(Sex.class));
-    private final JComboBox<Race> raceField       = new JComboBox<>(new Vector<>());
+    private final JComboBox<Race> raceField       = new JComboBox<>(races);
     private final AlignmentPicker alignmentPicker = new AlignmentPicker();
     
     private final Character character;
