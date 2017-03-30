@@ -1,5 +1,6 @@
 package anotherdnd.view.temp;
 
+import anotherdnd.model.Character;
 import anotherdnd.model.mechanics.Ability;
 import anotherdnd.view.temp.Wizard.WizardScreen;
 
@@ -8,6 +9,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 import static anotherdnd.view.util.EZGridBag.*;
+import static anotherdnd.view.util.ModelSync.sync;
 import static java.awt.GridBagConstraints.*;
 
 public class CharacterBuilderScreen2 extends JPanel implements WizardScreen {
@@ -19,14 +21,16 @@ public class CharacterBuilderScreen2 extends JPanel implements WizardScreen {
     @Override public WizardScreen getNext()     { return null; }
 
     private final CharacterBuilderScreen1   previous;
+    private final Character                 character;
 
     private final InfoPanel infoPanel = new InfoPanel(getClass().getName()) {{
         setBorder(new EmptyBorder(0, 0, 0, 2*MARGIN)); // padding
     }};
 
-    public CharacterBuilderScreen2(CharacterBuilderScreen1 previous) {
+    public CharacterBuilderScreen2(CharacterBuilderScreen1 previous, Character character) {
         super(new GridBagLayout());
         this.previous = previous;
+        this.character = character;
 
         add(infoPanel, gbc(gx(0), wx(1), wy(1), noInsets(), fill(), align(0, -1)));
 
@@ -37,7 +41,7 @@ public class CharacterBuilderScreen2 extends JPanel implements WizardScreen {
                 int x = -1;
                 
                 JLabel abilityLabel    = new JLabel(ability.name);
-                JLabel abilityScore    = new JLabel("10");
+                JLabel abilityScore    = sync(new JLabel(), () -> character.getAbilityScore(ability));
                 JButton decrementScore = new JButton("<");
                 JButton incrementScore = new JButton(">");
                 

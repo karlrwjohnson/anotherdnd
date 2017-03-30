@@ -60,7 +60,7 @@ public class ModelSync {
      *                    Use the parameter to refer to the component.
      * @param modelGetter - Retrieves the new value from the model.
      */
-    public static <C, T> void watch(C component, BiConsumer<C, T> guiSetter, Supplier<T> modelGetter) {
+    public static <C, T> C watch(C component, BiConsumer<C, T> guiSetter, Supplier<T> modelGetter) {
         // Mutable container for state information
         List<T> oldValueRef = new ArrayList<T>(1);
         oldValueRef.add(modelGetter.get());
@@ -75,17 +75,16 @@ public class ModelSync {
             }
         });
 
-        // Null-out our reference to the component to prove our lambda doesn't have a reference to it.
-        component = null;
+        return component;
     }
 
-    public static void sync(JLabel component, Supplier<String> modelGetter) {
-        component.setText(modelGetter.get());
+    public static JLabel sync(JLabel component, Supplier<Object> modelGetter) {
+        component.setText(modelGetter.get().toString());
 
-        watch(component, JLabel::setText, modelGetter);
+        return watch(component, (jLabel, value) -> jLabel.setText(value.toString()), modelGetter);
     }
 
-    public static void sync(JTextField component, Supplier<String> modelGetter, Consumer<String> modelSetter) {
+    public static JTextField sync(JTextField component, Supplier<String> modelGetter, Consumer<String> modelSetter) {
         component.setText(modelGetter.get());
 
         component.addActionListener(evt -> {
@@ -94,11 +93,11 @@ public class ModelSync {
             scheduleUpdate();
         });
 
-        watch(component, JTextField::setText, modelGetter);
+        return watch(component, JTextField::setText, modelGetter);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> void sync(JComboBox<T> component, Supplier<T> modelGetter, Consumer<T> modelSetter) {
+    public static <T> JComboBox<T> sync(JComboBox<T> component, Supplier<T> modelGetter, Consumer<T> modelSetter) {
         component.setSelectedItem(modelGetter.get());
 
         component.addActionListener(evt -> {
@@ -107,10 +106,10 @@ public class ModelSync {
             scheduleUpdate();
         });
 
-        watch(component, JComboBox::setSelectedItem, modelGetter);
+        return watch(component, JComboBox::setSelectedItem, modelGetter);
     }
 
-    public static void sync(JSpinner component, Supplier<Object> modelGetter, Consumer<Object> modelSetter) {
+    public static JSpinner sync(JSpinner component, Supplier<Object> modelGetter, Consumer<Object> modelSetter) {
         component.setValue(modelGetter.get());
 
         component.addChangeListener(evt -> {
@@ -119,7 +118,7 @@ public class ModelSync {
             scheduleUpdate();
         });
 
-        watch(component, JSpinner::setValue, modelGetter);
+        return watch(component, JSpinner::setValue, modelGetter);
     }
 //
 //    public static void sync(SpinnerNumberModel field, Supplier<Number> modelGetter, Consumer<Number> modelSetter) {
