@@ -43,11 +43,7 @@ public class InfoPanel extends JPanel {
     }
 
     public void showForKey(String key) {
-        String strings[];
-
-//        System.out.println(stringMap); System.out.println(key);
         JsonNode entry = stringMap.get(key);
-//        System.out.println(entry);
 
         infoTitle.setVisible(true);
         infoTitle.setText(entry.get("title").asText());
