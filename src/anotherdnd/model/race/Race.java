@@ -28,22 +28,21 @@ public interface Race extends
         return ret;
     }
 
+    default int getAbilityScoreModifier(Ability ability) {
+        return Arrays.stream(this.getClass().getAnnotationsByType(AbilityBonus.class))
+                .filter(abilityBonus -> abilityBonus.ability() == ability)
+                .mapToInt(AbilityBonus::bonus)
+                .sum();
+    }
+
     default Bonus getAbilityScoreBonus(Ability ability) {
-        int bonus = Arrays.stream(this.getClass().getAnnotationsByType(AbilityBonus.class))
-            .filter(abilityBonus -> abilityBonus.ability() == ability && abilityBonus.bonus() > 0)
-            .mapToInt(AbilityBonus::bonus)
-            .findFirst()
-            .orElse(0);
-        return new Bonus(BonusType.Racial, bonus, this);
+        int bonus = getAbilityScoreModifier(ability);
+        return new Bonus(BonusType.Racial, bonus > 0 ? bonus : 0, this);
     }
 
     default Penalty getAbilityScorePenalty(Ability ability) {
-        int bonus = Arrays.stream(this.getClass().getAnnotationsByType(AbilityBonus.class))
-            .filter(abilityBonus -> abilityBonus.ability() == ability && abilityBonus.bonus() < 0)
-            .mapToInt(AbilityBonus::bonus)
-            .findFirst()
-            .orElse(0);
-        return new Penalty(-bonus, this);
+        int bonus = getAbilityScoreModifier(ability);
+        return new Penalty(bonus < 0 ? -bonus : 0, this);
     }
 
     default String getDescription() {

@@ -10,7 +10,6 @@ import anotherdnd.view.util.ModelSync;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.util.Vector;
 
 import static anotherdnd.view.util.EZGridBag.*;
 import static anotherdnd.view.util.Misc.setMinimumWidth;

@@ -22,6 +22,7 @@ public class CharacterBuilderScreen2 extends JPanel implements WizardScreen {
 
     private final CharacterBuilderScreen1   previous;
     private final Character                 character;
+    private final AbilityPointBuyBudget     budget;
 
     private final InfoPanel infoPanel = new InfoPanel(getClass().getName()) {{
         setBorder(new EmptyBorder(0, 0, 0, 2*MARGIN)); // padding
@@ -31,29 +32,57 @@ public class CharacterBuilderScreen2 extends JPanel implements WizardScreen {
         super(new GridBagLayout());
         this.previous = previous;
         this.character = character;
+        this.budget = AbilityPointBuyBudget.of(character, 25);
 
         add(infoPanel, gbc(gx(0), wx(1), wy(1), noInsets(), fill(), align(0, -1)));
 
         add(new JPanel(new GridBagLayout()) {{
-            int y = -1;
-            for (Ability ability : Ability.values()) {
-                ++y;
-                int x = -1;
-                
-                JLabel abilityLabel    = new JLabel(ability.name);
-                JLabel abilityScore    = sync(new JLabel(), () -> character.getAbilityScore(ability));
-                JButton decrementScore = new JButton("<");
-                JButton incrementScore = new JButton(">");
-                
-                add(abilityLabel,   gbc(gx(++x), gy(y), fill()));
-                add(decrementScore, gbc(gx(++x), gy(y), fill()));
-                add(abilityScore,   gbc(gx(++x), gy(y), fill()));
-                add(incrementScore, gbc(gx(++x), gy(y), fill()));
+            int y = 0;
 
-                infoPanel.showForComponent(abilityLabel,   ability.name());
-                infoPanel.showForComponent(decrementScore, ability.name());
-                infoPanel.showForComponent(abilityScore,   ability.name());
-                infoPanel.showForComponent(incrementScore, ability.name());
+            add(new JPanel(new GridBagLayout()) {{
+                int y = -1;
+
+                ++y;
+                add(new JLabel("Score"), gbc(gx(1), gw(3)));
+                add(new JLabel("Modifier"), gbc(gx(4)));
+
+                for (Ability ability : Ability.values()) {
+                    ++y;
+                    int x = -1;
+
+                    JLabel abilityLabel = new JLabel(ability.name);
+                    JLabel abilityScore = sync(new JLabel(), () -> character.getAbilityScore(ability));
+                    JButton decrementScore = new JButton("-");
+                    JButton incrementScore = new JButton("+");
+                    JLabel abilityBonus = sync(new JLabel(), () -> character.getAbilityBonus(ability));
+
+                    decrementScore.addActionListener(e -> budget.decrementScore(ability));
+                    incrementScore.addActionListener(e -> budget.incrementScore(ability));
+
+                    add(abilityLabel,   gbc(gx(++x), gy(y), fill()));
+                    add(decrementScore, gbc(gx(++x), gy(y), fill()));
+                    add(abilityScore,   gbc(gx(++x), gy(y), fill()));
+                    add(incrementScore, gbc(gx(++x), gy(y), fill()));
+                    add(abilityBonus,   gbc(gx(++x), gy(y), fill()));
+
+                    infoPanel.showForComponent(abilityLabel, ability.name());
+                    infoPanel.showForComponent(decrementScore, ability.name());
+                    infoPanel.showForComponent(abilityScore, ability.name());
+                    infoPanel.showForComponent(incrementScore, ability.name());
+                    infoPanel.showForComponent(abilityBonus, ability.name());
+                }
+            }}, gbc(gy(++y), wy(1), fill(), noInsets()));
+
+            add(sync(new JLabel(), () -> "Total Budget: " + budget.getBudget()), gbc(gy(++y), fill()));
+            add(sync(new JLabel(), () -> "Points spent: " + budget.getTotalPointsSpent()), gbc(gy(++y), fill()));
+            add(sync(new JLabel(), () -> "Points remaining: " + budget.getPointsRemaining()), gbc(gy(++y), fill()));
+            add(new JLabel("Budget type: " + budget.getClass().getSimpleName()), gbc(gy(++y), fill()));
+            add(new JLabel("-------"), gbc(gy(++y), fill()));
+            for (Ability ability : Ability.values()) {
+                add(sync(new JLabel(), () -> String.format(
+                    "%s: %d spent, %d base, %d total",
+                        ability.name(), budget.getPointsSpentOn(ability), character.getAbilityBaseScore(ability), character.getAbilityScore(ability)
+                )), gbc(gy(++y), fill()));
             }
         }}, gbc(gx(1), wy(1), noInsets(), anchor(NORTH)));
     }
