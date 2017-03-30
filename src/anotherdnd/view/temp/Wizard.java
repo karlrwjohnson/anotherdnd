@@ -19,7 +19,7 @@ public class Wizard extends JPanel {
     private final JButton previousButton = new JButton();
 
     private WizardScreen     screen;
-    private JPanel           screenPanel;
+    private JPanel           screenPanel = null;
     
     public interface WizardScreen {
         JPanel getPanel();
@@ -49,6 +49,7 @@ public class Wizard extends JPanel {
         }}, gbc(gy(2), fill()));
         
         sync(titleLabel, () -> screen.getTitle());
+//        watch(previousButton, (button, enabled) -> { System.out.println("enabled := " + enabled); button.setEnabled(enabled); }, () -> { System.out.println("hasPrevious = " + screen.hasPrevious()); return screen.hasPrevious(); });
         watch(previousButton, JButton::setEnabled, () -> screen.hasPrevious());
         watch(previousButton, JButton::setText,    () -> screen.getPreviousLabel());
         watch(nextButton,     JButton::setEnabled, () -> screen.hasNext());
@@ -67,6 +68,8 @@ public class Wizard extends JPanel {
         if (screenPanel != null) {
             add(screenPanel, gbc(gy(1), wy(1), wx(1), noInsets(), fill()));
         }
+        revalidate();
+        repaint();
         ModelSync.scheduleUpdate();
     }
 }

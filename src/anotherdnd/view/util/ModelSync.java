@@ -61,22 +61,22 @@ public class ModelSync {
      * @param modelGetter - Retrieves the new value from the model.
      */
     public static <C, T> void watch(C component, BiConsumer<C, T> guiSetter, Supplier<T> modelGetter) {
-        guiSetter.accept(component, modelGetter.get());
-
         // Mutable container for state information
         List<T> oldValueRef = new ArrayList<T>(1);
+        oldValueRef.add(modelGetter.get());
+
+        guiSetter.accept(component, oldValueRef.get(0));
 
         addModelChecker(component, _component -> {
             T newValue = modelGetter.get();
-            if (oldValueRef.size() > 0) {
-                if (!oldValueRef.get(0).equals(newValue)) {
-                    guiSetter.accept(_component, newValue);
-                }
-            } else {
-                oldValueRef.add(newValue);
+            if (!oldValueRef.get(0).equals(newValue)) {
+                oldValueRef.set(0, newValue);
                 guiSetter.accept(_component, newValue);
             }
         });
+
+        // Null-out our reference to the component to prove our lambda doesn't have a reference to it.
+        component = null;
     }
 
     public static void sync(JLabel component, Supplier<String> modelGetter) {

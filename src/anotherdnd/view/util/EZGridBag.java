@@ -67,6 +67,8 @@ public interface EZGridBag {
     static GridBagConstraint wy (double value) { return weighty    (value); }
 
     static GridBagConstraint fill() { return fill(BOTH); }
+    static GridBagConstraint fillHorizontal() { return fill(HORIZONTAL); }
+    static GridBagConstraint fillVertical() { return fill(VERTICAL); }
 
     static GridBagConstraint insets (int top, int left, int bottom, int right) { return insets(new Insets(top, left, bottom, right)); }
     static GridBagConstraint insets (int all) { return insets(new Insets(all, all, all, all)); }

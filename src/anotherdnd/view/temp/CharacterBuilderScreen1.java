@@ -4,25 +4,16 @@ import anotherdnd.model.bio.CivicAlignment;
 import anotherdnd.model.bio.MoralAlignment;
 import anotherdnd.model.bio.Sex;
 import anotherdnd.model.race.Race;
-import anotherdnd.model.util.Maybe;
 import anotherdnd.view.temp.Wizard.WizardScreen;
 import anotherdnd.view.util.EnumListModel;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.MatteBorder;
 import java.awt.*;
-import java.io.File;
-import java.util.*;
+import java.util.Vector;
 
 import static anotherdnd.view.util.EZGridBag.*;
-import static anotherdnd.view.util.Events.onFocus;
-import static anotherdnd.view.util.Events.onMouseOver;
 import static anotherdnd.view.util.Misc.setMinimumWidth;
-import static java.awt.GridBagConstraints.HORIZONTAL;
 import static java.awt.GridBagConstraints.NORTH;
 
 public class CharacterBuilderScreen1 extends JPanel implements WizardScreen {
@@ -31,60 +22,26 @@ public class CharacterBuilderScreen1 extends JPanel implements WizardScreen {
     private final AlignmentPicker           alignmentPicker     = new AlignmentPicker();
     private final JComboBox<Sex>            sexField            = new JComboBox<>(new EnumListModel<>(Sex.class));
     private final JComboBox<Race>           raceField           = new JComboBox<>(new Vector<>());
-    private final JLabel                    raceDescription     = new JLabel();
-
-    private final JLabel                    infoTitle           = new JLabel() {{ setFont(getFont().deriveFont(18.0f)); setBorder(new MatteBorder(0, 0, 1, 0, new Color(0x666666))); setVisible(true); }};
-    private final JLabel                    infoContent         = new JLabel();
-
-    private final HashMap<Component, String[]> infoPanels = new HashMap<Component, String[]>() {
-        {
-            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-            JsonNode node = Maybe.of(() -> mapper.readTree(new File("resources/strings.yaml"))).orElseThrow();
-            JsonNode stringMap = node.get(CharacterBuilderScreen1.class.getName());
-
-            put(nameField, new String[] {
-                    stringMap.get("name").get("title").asText(),
-                    stringMap.get("name").get("content").asText(),
-            });
-            put(raceField, new String[] {
-                    stringMap.get("race").get("title").asText(),
-                    stringMap.get("race").get("content").asText(),
-            });
-            put(alignmentPicker, new String[] {
-                    stringMap.get("alignment").get("title").asText(),
-                    stringMap.get("alignment").get("content").asText(),
-            });
-            put(sexField, new String[] {
-                    stringMap.get("sex").get("title").asText(),
-                    stringMap.get("sex").get("content").asText(),
-            });
-
-            for (Component component : keySet()) {
-                component.addFocusListener(onFocus(this::showInfoPanelFor));
-                component.addMouseListener(onMouseOver(this::showInfoPanelFor));
-            }
-        }
-
-        private void showInfoPanelFor(Component component) {
-            String strings[];
-            for (strings = null; strings == null; component = component.getParent()) {
-                strings = get(component);
-            }
-
-            infoTitle.setVisible(true);
-            infoTitle.setText(strings[0]);
-            infoContent.setText(strings[1]);
-        }
-    };
 
     public CharacterBuilderScreen1() {
         super(new GridBagLayout());
+
+        add(new InfoPanel(getClass().getName()) {{
+                setBorder(new EmptyBorder(0, 0, 0, 2*MARGIN)); // padding
+
+                showForComponent(nameField, "name");
+                showForComponent(raceField, "race");
+                showForComponent(alignmentPicker, "alignment");
+                showForComponent(sexField, "sex");
+        }}, gbc(gx(0), wx(1), wy(1), noInsets(), fill(), align(0, -1)));
+
         add(new JPanel(new GridBagLayout()) {{
-            int y = 0;
 
             setMinimumWidth(this, 200);
 
-            add(new JLabel("Name"),      gbc(gy(++y), fill()));
+            int y = 0;
+
+            add(new JLabel("Name"),      gbc(gy(++y), fill(), wx(1)));
             add(nameField,               gbc(gy(++y), fill()));
 
             add(new JLabel("Race"),      gbc(gy(++y), fill()));
@@ -96,15 +53,7 @@ public class CharacterBuilderScreen1 extends JPanel implements WizardScreen {
             add(new JLabel("Sex"),       gbc(gy(++y), fill()));
             add(sexField,                gbc(gy(++y), fill()));
 
-            add(raceDescription,         gbc(gy(++y), fill()));
-        }}, gbc(wy(1), noInsets(), anchor(NORTH)));
-
-        add(new JPanel(new GridBagLayout()) {{
-            setBorder(new EmptyBorder(0, 2*MARGIN, 0, 0)); // padding
-
-            add(infoTitle, gbc(wx(1), align(-1, 0), fill()));
-            add(infoContent, gbc(gy(1), wx(1), wy(1), align(-1, -1), fill(HORIZONTAL)));
-        }}, gbc(gx(1), wx(1), wy(1), noInsets(), fill(), align(0, -1)));
+        }}, gbc(gx(1), wy(1), noInsets(), anchor(NORTH)));
     }
 
     @Override public JPanel getPanel() { return this; }

@@ -44,4 +44,83 @@ anotherdnd.view.temp.CharacterBuilderScreen1:
     content: |
       <html>
         <p>Your character's sex does not affect game mechanics in any meaningful way.</p>
-      </html>"
+      </html>
+
+anotherdnd.view.temp.CharacterBuilderScreen2:
+  STR:
+    title: Strength
+    content: |
+      <html>
+        <p><b>Strength</b> measures a character's ability to exert raw physical force on their environment.</p>
+        <br />
+        <p>A character with high Strength is more likely to hit enemies with melee attacks and will do more damage
+          in the process. A strong character is also better at swimming, climbing, and lifting heavy loads.</p>
+        <br />
+        <p>&quot;<b>Strength</b> is being able to crush a tomato.&quot;</p>
+      </html>
+  DEX:
+    title: Dexterity
+    content: |
+      <html>
+        <p><b>Dexterity</b> measures a character's alertness, quickness, and evasiveness.</p>
+        <br />
+        <p>A character with high Dexterity is more likely to dodge enemy attacks, avoid traps, and hit enemies with
+          ranged weapons. Dexterous characters also find it easier to sneak without being detected.</p>
+        <br />
+        <p>&quot;<b>Dexterity</b> is being able to dodge a tomato.&quot;</p>
+      </html>
+  CON:
+    title: Constitution
+    content: |
+      <html>
+        <p><b>Constitution</b> measures a character's ability to withstand injury.</p>
+        <br />
+        <p>A character with high Constitution has more health and is more able to shrug off disease and withstand
+          environmental effects.</p>
+        <br />
+        <p>&quot;<b>Constitution</b> is being able to eat a bad tomato.&quot;</p>
+      </html>
+  INT:
+    title: Intelligence
+    content: |
+      <html>
+        <p><b>Intelligence</b> measures a character's capacity for analytical reasoning (their &quot;book smarts&quot;)</p>
+        <br />
+        <p>A character with high Intelligence has broader and deeper knowledge than a low-intelligence character.</p>
+        <br />
+        <p>Characters with levels in certain <b>Arcane</b> classes, such as <b>Wizards</b>, gain bonus spells if they
+          have high Intelligence, and their spells are more effective.</p>
+        <br />
+        <p>&quot;<b>Intelligence</b> is knowing a tomato is a fruit.&quot;</p>
+      </html>
+  WIS:
+    title: Wisdom
+    content: |
+      <html>
+        <p><b>Wisdom</b> measures a character's capacity for intuitive reasoning (their &quot;street smarts&quot;)</p>
+        <br />
+        <p>A character with high Wisdom has greater intuition about people and complex situtations, making observations
+          others fail to notice. Characters with high wisdom also find it easier to remain resolute in the face of
+          danger and mind-altering effects.</p>
+        <br />
+        <p>Characters with levels in <b>Divine</b> casting classes, such as <b>Clerics</b>, gain bonus spells if
+          they have high Wisdom, and their spells are more effective.</p>
+        <br />
+        <p>&quot;<b>Wisdom</b> is knowing not to put a tomato in a fruit salad.&quot;</p>
+      </html>
+  CHA:
+    title: Charisma
+    content: |
+      <html>
+        <p><b>Charisma</b> measures the force of a character's personality and their ability to express their ideas.</p>
+        <br />
+        <p>A character with high Charisma finds it easier to convince others to take their viewpoint, bluff their way
+          out of a situtation, win the affection of others, and pursue artistic expression.</p>
+        <br />
+        <p>Characters with levels in certain <b>Arcane</b> casting classes, such as <b>Sorcerers</b> and <b>Bards</b>,
+          gain bonus spells if they have high Charisma, and their spells are more effective.</p>
+        <br />
+        <p>&quot;<b>Charisma</b> is being able to sell a tomato-based fruit salad.&quot;</p>
+      </html>
+
+
