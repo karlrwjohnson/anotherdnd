@@ -12,6 +12,7 @@ import static anotherdnd.view.util.EZGridBag.*;
 import static anotherdnd.view.util.Misc.formatBonus;
 import static anotherdnd.view.util.ModelSync.sync;
 import static anotherdnd.view.util.ModelSync.watch;
+import static java.awt.Color.black;
 import static java.awt.GridBagConstraints.*;
 
 public class CharacterBuilderScreen2 extends JPanel implements WizardScreen {
@@ -19,8 +20,10 @@ public class CharacterBuilderScreen2 extends JPanel implements WizardScreen {
     @Override public String       getTitle()    { return "Abilities"; }
     @Override public boolean      hasPrevious() { return true; }
     @Override public WizardScreen getPrevious() { return previous; }
-    @Override public boolean      hasNext()     { return false; }
+    @Override public boolean      hasNext()     { return budget.getPointsRemaining() >= 0; }
     @Override public WizardScreen getNext()     { return null; }
+
+    private final CharacterBuilderScreen2   that = this;
 
     private final CharacterBuilderScreen1   previous;
     private final Character                 character;
@@ -50,8 +53,8 @@ public class CharacterBuilderScreen2 extends JPanel implements WizardScreen {
 
                     JLabel abilityLabel = new JLabel(ability.name);
                     JLabel abilityScore = sync(new JLabel(), () -> formatBonus(character.getAbilityScore(ability)));
-                    JButton decrementScore = new JButton("-");
-                    JButton incrementScore = new JButton("+");
+                    JButton decrementScore = new JButton("➖");
+                    JButton incrementScore = new JButton("➕");
                     JLabel abilityBonus = sync(new JLabel(), () -> formatBonus(character.getAbilityBonus(ability)));
 
                     decrementScore.addActionListener(e -> budget.decrementScore(ability));
@@ -74,9 +77,31 @@ public class CharacterBuilderScreen2 extends JPanel implements WizardScreen {
                 }
             }}, gbc(gy(++y), wy(1), fill(), noInsets()));
 
-            add(sync(new JLabel(), () -> "Total Budget: " + budget.getBudget()), gbc(gy(++y), fill()));
-            add(sync(new JLabel(), () -> "Points spent: " + budget.getTotalPointsSpent()), gbc(gy(++y), fill()));
-            add(sync(new JLabel(), () -> "Points remaining: " + budget.getPointsRemaining()), gbc(gy(++y), fill()));
+            add(new JPanel(new GridBagLayout()) {{
+                int y = 0;
+
+                ++y;
+                add(new JLabel("Total Budget:"), gbc(gy(y), wx(1), align(-1, 0)));
+                add(sync(new JLabel(), budget::getBudget), gbc(gx(1), gy(y), align(1, 0)));
+
+                ++y;
+                add(new JLabel("Points Spent:"), gbc(gy(y), wx(1), align(-1, 0)));
+                add(sync(new JLabel(), budget::getTotalPointsSpent), gbc(gx(1), gy(y), align(1, 0)));
+
+                ++y;
+                add(watch(
+                    new JLabel("Points Remaining:"),
+                    CharacterBuilderScreen2::highlightInvalidLabel,
+                    that::hasNext
+                ), gbc(gy(++y), wx(1), align(-1, 0)));
+                add(watch(
+                    sync(new JLabel(), budget::getPointsRemaining),
+                    CharacterBuilderScreen2::highlightInvalidLabel,
+                    that::hasNext
+                ), gbc(gx(1), gy(y), align(1, 0)));
+
+            }}, gbc(gy(++y), fill(), noInsets()));
+            /*
             add(new JLabel("Budget type: " + budget.getClass().getSimpleName()), gbc(gy(++y), fill()));
             add(new JLabel("-------"), gbc(gy(++y), fill()));
             for (Ability ability : Ability.values()) {
@@ -85,7 +110,12 @@ public class CharacterBuilderScreen2 extends JPanel implements WizardScreen {
                         ability.name(), budget.getPointsSpentOn(ability), character.getAbilityBaseScore(ability), character.getAbilityScore(ability)
                 )), gbc(gy(++y), fill()));
             }
+            */
         }}, gbc(gx(1), wy(1), noInsets(), anchor(NORTH)));
     }
 
+    private static void highlightInvalidLabel (JLabel label, boolean isValid) {
+        label.setForeground(isValid ? Color.black : Color.red);
+        label.setFont(label.getFont().deriveFont( isValid ? Font.PLAIN : Font.BOLD ));
+    }
 }
